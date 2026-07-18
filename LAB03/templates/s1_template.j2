@@ -1,0 +1,47 @@
+
+vlan 99
+ name Management_VLAN
+exit
+
+vlan 101
+ name Data_VLAN
+exit
+
+
+interface GigabitEthernet0/0
+ switchport access vlan 99
+ switchport mode access
+ no shutdown
+exit
+
+interface range GigabitEthernet0/1 - 2, GigabitEthernet1/1
+ switchport access vlan 101
+ switchport mode access
+ no shutdown
+exit
+
+interface Vlan99
+ ip address 172.31.124.3 255.255.255.240
+ no ip route-cache
+ no shutdown
+exit
+
+
+ip default-gateway 172.31.124.1
+
+
+no ip access-list standard MGMT
+ip access-list standard MGMT
+ permit 172.31.124.0 0.0.0.15
+ permit 10.30.6.0 0.0.0.255
+exit
+
+
+line vty 0 15
+ access-class MGMT in
+ login local
+ transport input telnet ssh
+exit
+
+end
+write memory

@@ -1,0 +1,64 @@
+
+ip vrf control-data
+exit
+ip vrf management
+exit
+
+
+interface GigabitEthernet0/0
+ ip vrf forwarding management
+ ip address 172.31.124.5 255.255.255.240
+ no shutdown
+exit
+
+interface GigabitEthernet0/1
+ ip vrf forwarding control-data
+ ip address 10.1.1.2 255.255.255.0
+ ip nat inside
+ ip ospf 10 area 0
+ no shutdown
+exit
+
+interface GigabitEthernet0/2
+ ip vrf forwarding control-data
+ ip address 10.1.3.1 255.255.255.0
+ ip nat inside
+ ip ospf 10 area 0
+ no shutdown
+exit
+
+interface GigabitEthernet0/3
+ ip address dhcp
+ ip nat outside
+ no shutdown
+exit
+
+router ospf 10 vrf control-data
+ router-id 2.2.2.2
+ default-information originate
+exit
+
+ip route vrf control-data 0.0.0.0 0.0.0.0 192.168.42.1 global
+ip route vrf management 0.0.0.0 0.0.0.0 172.31.124.1
+
+no ip access-list standard MGMT
+ip access-list standard MGMT
+ permit 172.31.124.0 0.0.3.255
+ permit 10.30.6.0 0.0.0.255
+exit
+
+no ip access-list standard NAT_ACL
+ip access-list standard NAT_ACL
+ permit 10.0.0.0 0.255.255.255
+exit
+
+ip nat inside source list NAT_ACL interface GigabitEthernet0/3 vrf control-data overload
+
+line vty 0 15
+ access-class MGMT in vrf-also
+ login local
+ transport input telnet ssh
+exit
+
+end
+write memory
