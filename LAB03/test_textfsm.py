@@ -1,7 +1,6 @@
 import pytest
 from textfsmlab import short_port_name, generate_description
 
-# ---------- short_port_name() ----------
 
 def test_short_gigabit():
     assert short_port_name("GigabitEthernet0/1") == "G0/1"
@@ -20,8 +19,6 @@ def test_short_none():
 
 def test_short_empty():
     assert short_port_name("") == ""
-
-# ---------- generate_description() ----------
 
 def test_r2_wan():
     assert generate_description("R2", "Gig 0/3") == "Connect to WAN"
